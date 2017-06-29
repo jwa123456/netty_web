@@ -11,6 +11,8 @@ import serverbaseentity.InputJsonMessage;
 import serverbaseentity.ReturnMessage;
 import utils.InputProcessor;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * Created by jiang wei on 2016/9/27.
  */
@@ -36,7 +38,7 @@ public class HttpServerInBoundHandler extends ChannelInboundHandlerAdapter {
         * 当client的json比较大的时候会出现json截断的问题
         * */
         ReturnMessage returnMessage = new ReturnMessage();
-        if (msg instanceof FullHttpRequest) {
+        if (msg instanceof HttpRequest) {
             //这里可以去取header之类的东西
             request = (FullHttpRequest) msg;
             System.out.println("Uri:" + request.getUri());
@@ -47,7 +49,7 @@ public class HttpServerInBoundHandler extends ChannelInboundHandlerAdapter {
                 HttpContent content = (HttpContent) msg;
                 ByteBuf buf = content.content();
                 String inputMessage = buf.toString(CharsetUtil.UTF_8);
-                buf.release();
+//                buf.release();
                 InputJsonMessage jsonMessage = JSON.parseObject(inputMessage, InputJsonMessage.class);
                 returnMessage = InputProcessor.inputProcessor(jsonMessage.getHeader(), jsonMessage.getBody());
                 System.out.println(buf.toString(CharsetUtil.UTF_8));
@@ -80,7 +82,7 @@ public class HttpServerInBoundHandler extends ChannelInboundHandlerAdapter {
 
         long resultTime = end - start;
         //计算每次请求到返回的用时
-        System.out.println(resultTime);
+        System.out.println(TimeUnit.NANOSECONDS.toMillis(resultTime));
     }
 
     @Override

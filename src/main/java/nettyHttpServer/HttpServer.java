@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
 
@@ -30,6 +31,7 @@ public class HttpServer {
                             socketChannel.pipeline().addLast(new HttpResponseEncoder());
                             //对request进行解码
                             socketChannel.pipeline().addLast(new HttpRequestDecoder());
+                            socketChannel.pipeline().addLast(new HttpObjectAggregator(65536));
                             //处理request并封装response的返回
                             socketChannel.pipeline().addLast(new HttpServerInBoundHandler());
                         }
